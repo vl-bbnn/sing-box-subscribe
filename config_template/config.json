@@ -1,0 +1,237 @@
+{
+   "log": {
+      "level": "info",
+      "timestamp": true
+   },
+   "dns": {
+      "servers": [
+         {
+            "tag": "local-dns",
+            "address": "local",
+            "detour": "direct-out"
+         },
+         {
+            "tag": "cloudflare-dns",
+            "address": "https://1.1.1.1/dns-query",
+            "address_resolver": "local-dns",
+            "detour": "handle"
+         }
+      ],
+      "rules": [
+         {
+            "domain": "194.156.102.57",
+            "server": "local-dns"
+         },
+         {
+            "rule_set": "antizapret",
+            "server": "cloudflare-dns"
+         }
+      ]
+   },
+   "inbounds": [
+      {
+         "type": "tun",
+         "address": [
+            "172.16.0.1/30"
+         ],
+         "auto_route": true,
+         "strict_route": true,
+         "sniff": true,
+         "domain_strategy": "prefer_ipv4"
+      }
+   ],
+   "outbounds": [
+      {
+         "type": "direct",
+         "tag": "direct-out"
+      },
+      {
+         "type": "dns",
+         "tag": "dns-out"
+      }
+   ],
+   "route": {
+      "rules": [
+         {
+            "type": "logical",
+            "mode": "and",
+            "rules": [
+               {
+                  "rule_set": [
+                     "antizapret",
+                     "geosite-youtube",
+                     "geosite-microsoft",
+                     "geosite-discord",
+                     "ip-antifilter_allyouneed",
+                     "no-russia-hosts",
+                     "discord-voice-ip-list"
+                  ]
+               },
+               {
+                  "rule_set": [
+                     "geosite-reddit"
+                  ],
+                  "invert": true
+               }
+            ],
+            "outbound": "handle"
+         },
+         {
+            "rule_set": [
+               "geosite-trackernetwork",
+               "geosite-category-ads-all",
+               "geosite-ads",
+               "geosite-malware",
+               "geoip-malware",
+               "geosite-phishing",
+               "geoip-phishing",
+               "geosite-cryptominers",
+               "geosite-category-public-tracker",
+               "domain-oisd_big",
+               "domain-adaway_alive_hosts_mail_fb",
+               "domain-torrent_websites",
+               "domain-torrent_trackres"
+            ],
+            "outbound": "block"
+         },
+         {
+            "protocol": "dns",
+            "outbound": "dns-out"
+         }
+      ],
+      "rule_set": [
+         {
+            "type": "remote",
+            "tag": "antizapret",
+            "format": "binary",
+            "url": "https://github.com/savely-krasovsky/antizapret-sing-box/releases/latest/download/antizapret.srs"
+         },
+         {
+            "type": "remote",
+            "tag": "geosite-youtube",
+            "format": "binary",
+            "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-youtube.srs"
+         },
+         {
+            "type": "remote",
+            "tag": "geosite-reddit",
+            "format": "binary",
+            "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-reddit.srs"
+         },
+         {
+            "type": "remote",
+            "tag": "geosite-discord",
+            "format": "binary",
+            "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-discord.srs"
+         },
+         {
+            "type": "remote",
+            "tag": "geosite-microsoft",
+            "format": "binary",
+            "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-microsoft.srs"
+         },
+         {
+            "type": "remote",
+            "tag": "geosite-category-ads-all",
+            "format": "binary",
+            "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-category-ads-all.srs"
+         },
+         {
+            "type": "remote",
+            "tag": "geosite-category-public-tracker",
+            "format": "binary",
+            "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-category-public-tracker.srs"
+         },
+         {
+            "type": "remote",
+            "tag": "geosite-trackernetwork",
+            "format": "binary",
+            "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-trackernetwork.srs"
+         },
+         {
+            "type": "remote",
+            "tag": "geosite-ads",
+            "format": "binary",
+            "url": "https://raw.githubusercontent.com/hiddify/hiddify-geo/rule-set/block/geosite-category-ads-all.srs"
+         },
+         {
+            "type": "remote",
+            "tag": "geosite-malware",
+            "format": "binary",
+            "url": "https://raw.githubusercontent.com/hiddify/hiddify-geo/rule-set/block/geosite-malware.srs"
+         },
+         {
+            "type": "remote",
+            "tag": "geosite-phishing",
+            "format": "binary",
+            "url": "https://raw.githubusercontent.com/hiddify/hiddify-geo/rule-set/block/geosite-phishing.srs"
+         },
+         {
+            "type": "remote",
+            "tag": "geosite-cryptominers",
+            "format": "binary",
+            "url": "https://raw.githubusercontent.com/hiddify/hiddify-geo/rule-set/block/geosite-cryptominers.srs"
+         },
+         {
+            "type": "remote",
+            "tag": "geoip-phishing",
+            "format": "binary",
+            "url": "https://raw.githubusercontent.com/hiddify/hiddify-geo/rule-set/block/geoip-phishing.srs"
+         },
+         {
+            "type": "remote",
+            "tag": "geoip-malware",
+            "format": "binary",
+            "url": "https://raw.githubusercontent.com/hiddify/hiddify-geo/rule-set/block/geoip-malware.srs"
+         },
+         {
+            "type": "remote",
+            "tag": "domain-oisd_big",
+            "format": "binary",
+            "url": "https://github.com/burjuyz/RuRulesets/raw/main/ruleset-domain-oisd_big.srs"
+         },
+         {
+            "type": "remote",
+            "tag": "ip-antifilter_allyouneed",
+            "format": "binary",
+            "url": "https://github.com/burjuyz/RuRulesets/raw/main/ruleset-ip-antifilter_allyouneed.srs"
+         },
+         {
+            "type": "remote",
+            "tag": "domain-adaway_alive_hosts_mail_fb",
+            "format": "binary",
+            "url": "https://github.com/burjuyz/RuRulesets/raw/main/ruleset-domain-adaway_alive_hosts_mail_fb.srs"
+         },
+         {
+            "type": "remote",
+            "tag": "domain-torrent_websites",
+            "format": "binary",
+            "url": "https://github.com/burjuyz/RuRulesets/raw/main/ruleset-domain-torrent_websites.srs"
+         },
+         {
+            "type": "remote",
+            "tag": "domain-torrent_trackres",
+            "format": "binary",
+            "url": "https://github.com/burjuyz/RuRulesets/raw/main/ruleset-domain-torrent_trackres.srs"
+         },
+         {
+            "type": "remote",
+            "tag": "no-russia-hosts",
+            "format": "binary",
+            "url": "https://github.com/legiz-ru/sb-rule-sets/raw/main/no-russia-hosts.srs"
+         },
+         {
+            "type": "remote",
+            "tag": "discord-voice-ip-list",
+            "format": "binary",
+            "url": "https://github.com/legiz-ru/sb-rule-sets/raw/main/discord-voice-ip-list.srs"
+         }
+      ],
+      "auto_detect_interface": true
+   },
+   "experimental": {
+      "cache_file": {
+         "enabled": true
+      }
+   }
+}
