@@ -6,7 +6,7 @@ import urllib
 with warnings.catch_warnings(action="ignore", category=CryptographyDeprecationWarning):
     import paramiko
 from scp import SCPClient
-from urllib.parse import urlsplit, urlunsplit
+from urllib.parse import urlsplit, urlunsplit, urljoin
 
 def get_encoding(file):
     with open(file,'rb') as f:
@@ -186,15 +186,15 @@ def readFile(path):
 def load_json(path):
     return json.loads(readFile(path))
 
-def load_remote_json(path):
-    with urllib.request.urlopen(path) as url:
-        return json.load(url)
+def load_remote_json(url):
+    data = requests.get(url)
+    return json.loads(data.content)
     
 def localUrlToGlobal(local, ref):
     split_url = urlsplit(ref)
     clean_path = "".join(split_url.path.rpartition("/")[:-1])
     local_path = "".join(local.rpartition("/")[2:])
-    updated = split_url._replace(path=clean_path + local_path)
+    updated = split_url._replace(path=urljoin(clean_path, local_path))
     result = urlunsplit(updated)
     return result
 
