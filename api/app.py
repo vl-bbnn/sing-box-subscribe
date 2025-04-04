@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response
 from urllib.parse import quote, urlparse, unquote
 import json
@@ -17,6 +18,10 @@ app.secret_key = 'sing-box'  # 替换为实际的密钥
 # providers = json.dumps(tool.load_json('providers.json'))
 # os.environ['TEMP_JSON_DATA'] = providers
 # data_json['TEMP_JSON_DATA'] = providers
+
+load_dotenv()
+
+devices_url = os.getenv('DEVICES_URL')
 
 # 获取系统默认的临时目录路径
 TEMP_DIR = tempfile.gettempdir()
@@ -111,33 +116,24 @@ def edit_temp_json():
             flash(f'Error updating TEMP_JSON_DATA: note that the subscription link should not have a newline at the end, but should be inside double quotes ""')
             return jsonify({'status': 'error', 'message': str(e)})  # 返回错误状态和消息
 
-@app.route('/config', methods=['GET'])
-def config():
-    # user_agent = request.headers.get('User-Agent')
-    # rua_values = os.getenv('RUA')
-    # if rua_values and any(rua_value in user_agent for rua_value in rua_values.split(',')):
-    #     return Response(json.dumps({'status': 'error', 'message': 'block'}, indent=4, ensure_ascii=False),
-    #                     content_type='application/json; charset=utf-8', status=403)
+@app.route('/config/<string:id>', methods=['GET'])
+def config(id):
+    devices_data = tool.load_remote_json(devices_url)
+    device_data = devices_data[id]
+
+    if not device_data:
+        return
     
-    if request.args.get('url'):
-        url = request.args['url']
-
-    if request.args.get('template'):
-        template_url = request.args['template']
-
-    if request.args.get('providers'):
-        providers_url = request.args['providers']
-
-    # substrings = os.getenv('STR')
-    # if substrings and any(substring in url for substring in substrings.split(',')):
-    #     return Response(json.dumps({'status': 'error', 'message_CN': '填写参数不符合规范'}, indent=4, ensure_ascii=False),
-    #                     content_type='application/json; charset=utf-8', status=403)
-    # temp_json_data_str = os.environ['TEMP_JSON_DATA']
-    # temp_json_data = json.loads(temp_json_data_str)
+    if device_data['providers']:
+        providers_url = tool.localUrlToGlobal(device_data['providers'], devices_url)
+    
     temp_json_data = tool.load_remote_json(providers_url)
+
     subscribes = temp_json_data['subscribes']
+
     if len(subscribes) > 0:
         subscribe = subscribes[0]
+
     # if len(subscribes) > 1:
     #     subscribe2 = subscribes[1]
     # if len(subscribes) > 2:
@@ -241,8 +237,8 @@ def config():
     #     full_url = parts[0] + '/api/v4/projects/' + parts[1].replace('/', '%2F', 1)
     # print (full_url)
     # url_parts = full_url.split('|')
-    if url:
-        subscribe['url'] = url
+    if device_data['url']:
+        subscribe['url'] = device_data['url']
         # subscribe['ex-node-name'] = enn_param
         # subscribe2['url'] = full_url.split('url=', 1)[-1].split('|')[1] if full_url.startswith('url') else full_url.split('|')[1]
         # subscribe2['emoji'] = 1
@@ -263,7 +259,8 @@ def config():
     #     subscribe['ex-node-name'] = enn_param
     #     subscribe['User-Agent'] = ua_param if ua_param else 'v2rayng'
     # temp_json_data['exclude_protocol'] = eps_param if eps_param else temp_json_data.get('exclude_protocol', '')
-    if template_url:
+    if device_data['template']:
+        template_url = tool.localUrlToGlobal(device_data['template'], devices_url)
         temp_json_data['config_template'] = template_url
     #print (f"Custom Page for {url} with link={full_url}, emoji={emoji_param}, file={file_param}, tag={tag_param}, UA={ua_param}, prefix={pre_param}")
     #page_content = f"生成的页面内容：{full_url}"
