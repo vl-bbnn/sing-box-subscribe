@@ -26,13 +26,13 @@ def init_parsers():
                 parsers_mod[f[0]] = importlib.import_module('parsers.' + f[0])
 
 
-def get_template():
-    template_dir = 'config_template'  # 配置模板文件夹路径
-    template_files = os.listdir(template_dir)  # 获取文件夹中的所有文件
-    template_list = [os.path.splitext(file)[0] for file in template_files if
-                     file.endswith('.json')]  # 移除扩展名并过滤出以.json结尾的文件
-    template_list.sort()  # 对文件名进行排序
-    return template_list
+# def get_template():
+#     template_dir = 'config_template'  # 配置模板文件夹路径
+#     template_files = os.listdir(template_dir)  # 获取文件夹中的所有文件
+#     template_list = [os.path.splitext(file)[0] for file in template_files if
+#                      file.endswith('.json')]  # 移除扩展名并过滤出以.json结尾的文件
+#     template_list.sort()  # 对文件名进行排序
+#     return template_list
 
 def process_subscribes(subscribes):
     nodes = {}
@@ -585,18 +585,18 @@ if __name__ == '__main__':
         response = requests.get(providers['config_template'])
         response.raise_for_status()
         config = response.json()
-    else:
-        template_list = get_template()
-        if len(template_list) < 1:
-            print('没有找到模板文件')
-            # print('Không tìm thấy file mẫu')
-            sys.exit()
-        display_template(template_list)
-        uip = select_config_template(template_list, selected_template_index=args.template_index)
-        config_template_path = 'config_template/' + template_list[uip] + '.json'
-        print('选择: \033[33m' + template_list[uip] + '.json\033[0m')
-        # print ('Mẫu cấu hình sử dụng: \033[33m' + template_list[uip] + '.json\033[0m')
-        config = tool.load_json(config_template_path)
+    # else:
+    #     template_list = get_template()
+    #     if len(template_list) < 1:
+    #         print('没有找到模板文件')
+    #         # print('Không tìm thấy file mẫu')
+    #         sys.exit()
+    #     display_template(template_list)
+    #     uip = select_config_template(template_list, selected_template_index=args.template_index)
+    #     config_template_path = 'config_template/' + template_list[uip] + '.json'
+    #     print('选择: \033[33m' + template_list[uip] + '.json\033[0m')
+    #     # print ('Mẫu cấu hình sử dụng: \033[33m' + template_list[uip] + '.json\033[0m')
+    #     config = tool.load_json(config_template_path)
     nodes = process_subscribes(providers["subscribes"])
     if providers.get('Only-nodes'):
         combined_contents = []

@@ -47,13 +47,13 @@ def get_temp_json_data():
     return {}
 
 # 获取config_template目录下的模板文件列表
-def get_template_list():
-    template_list = []
-    config_template_dir = 'config_template'  # 配置模板文件夹路径
-    template_files = os.listdir(config_template_dir)  # 获取文件夹中的所有文件
-    template_list = [os.path.splitext(file)[0] for file in template_files if file.endswith('.json')]  # 移除扩展名并过滤出以.json结尾的文件
-    template_list.sort()  # 对文件名进行排序
-    return template_list
+# def get_template_list():
+#     template_list = []
+#     config_template_dir = 'config_template'  # 配置模板文件夹路径
+#     template_files = os.listdir(config_template_dir)  # 获取文件夹中的所有文件
+#     template_list = [os.path.splitext(file)[0] for file in template_files if file.endswith('.json')]  # 移除扩展名并过滤出以.json结尾的文件
+#     template_list.sort()  # 对文件名进行排序
+#     return template_list
 
 # 读取providers.json文件的内容，如果有临时 JSON 数据则使用它
 # def read_providers_json():
@@ -71,13 +71,13 @@ def get_template_list():
 #         with open('providers.json', 'w', encoding='utf-8') as json_file:
 #             json.dump(data, json_file, indent=4, ensure_ascii=False)
 
-@app.route('/')
-def index():
-    template_list = get_template_list()
-    template_options = [f"{index + 1}、{template}" for index, template in enumerate(template_list)]
-    providers_data = read_providers_json()
-    temp_json_data = get_temp_json_data()
-    return render_template('index.html', template_options=template_options, providers_data=json.dumps(providers_data, indent=4, ensure_ascii=False), temp_json_data=json.dumps(temp_json_data, indent=4, ensure_ascii=False))
+# @app.route('/')
+# def index():
+#     template_list = get_template_list()
+#     template_options = [f"{index + 1}、{template}" for index, template in enumerate(template_list)]
+#     providers_data = read_providers_json()
+#     temp_json_data = get_temp_json_data()
+#     return render_template('index.html', template_options=template_options, providers_data=json.dumps(providers_data, indent=4, ensure_ascii=False), temp_json_data=json.dumps(temp_json_data, indent=4, ensure_ascii=False))
 
 # @app.route('/update_providers', methods=['POST'])
 # def update_providers():
