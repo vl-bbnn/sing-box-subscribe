@@ -34,11 +34,6 @@ def get_template():
     template_list.sort()  # 对文件名进行排序
     return template_list
 
-
-def load_json(path):
-    return json.loads(tool.readFile(path))
-
-
 def process_subscribes(subscribes):
     nodes = {}
     for subscribe in subscribes:
@@ -581,8 +576,8 @@ if __name__ == '__main__':
     temp_json_data = args.temp_json_data
     if temp_json_data and temp_json_data != '{}':
         providers = json.loads(temp_json_data)
-    else:
-        providers = load_json('providers.json')  # 加载本地 providers.json
+    # else:
+    #     providers = tool.load_json('providers.json')  # 加载本地 providers.json
     if providers.get('config_template'):
         config_template_path = providers['config_template']
         print('选择: \033[33m' + config_template_path + '\033[0m')
@@ -601,7 +596,7 @@ if __name__ == '__main__':
         config_template_path = 'config_template/' + template_list[uip] + '.json'
         print('选择: \033[33m' + template_list[uip] + '.json\033[0m')
         # print ('Mẫu cấu hình sử dụng: \033[33m' + template_list[uip] + '.json\033[0m')
-        config = load_json(config_template_path)
+        config = tool.load_json(config_template_path)
     nodes = process_subscribes(providers["subscribes"])
     if providers.get('Only-nodes'):
         combined_contents = []

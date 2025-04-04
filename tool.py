@@ -1,6 +1,8 @@
 import base64,requests,random,string,re,chardet
+import json
 import warnings
 from cryptography.utils import CryptographyDeprecationWarning
+import urllib
 with warnings.catch_warnings(action="ignore", category=CryptographyDeprecationWarning):
     import paramiko
 from scp import SCPClient
@@ -179,6 +181,13 @@ def readFile(path):
     content = file.read()
     file.close()
     return content
+
+def load_json(path):
+    return json.loads(readFile(path))
+
+def load_remote_json(path):
+    with urllib.request.urlopen(path) as url:
+        return json.load(url)
 
 def noblankLine(data):
     lines = data.splitlines()
