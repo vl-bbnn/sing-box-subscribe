@@ -1,6 +1,4 @@
-from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response
-from urllib.parse import quote, urlparse, unquote
 import json
 import os
 import sys
@@ -9,6 +7,8 @@ import tempfile
 import shutil
 import tempfile  # 导入 tempfile 模块
 from datetime import datetime, timedelta
+
+from flask.cli import load_dotenv
 
 import tool
 
