@@ -360,46 +360,46 @@ def get_content_form_file(url):
         return data
 
 
-def save_config(path, nodes):
-    try:
-        if "auto_backup" in providers and providers["auto_backup"]:
-            now = datetime.now().strftime("%Y%m%d%H%M%S")
-            if os.path.exists(path):
-                os.rename(path, f"{path}.{now}.bak")
-        if os.path.exists(path):
-            os.remove(path)
-            print(f"已删除文件，并重新保存：\033[33m{path}\033[0m")
-            # print(f"File cấu hình đã được lưu vào: \033[33m{path}\033[0m")
-        else:
-            print(f"文件不存在，正在保存：\033[33m{path}\033[0m")
-            # print(f"File không tồn tại, đang lưu tại: \033[33m{path}\033[0m")
-        tool.saveFile(path, json.dumps(nodes, indent=2, ensure_ascii=False))
-    except Exception as e:
-        print(f"保存配置文件时出错：{str(e)}")
-        # print(f"Lỗi khi lưu file cấu hình: {str(e)}")
-        # 如果保存出错，尝试使用 config_file_path 再次保存
-        config_path = json.loads(temp_json_data).get("save_config_path", "config.json")
-        CONFIG_FILE_NAME = config_path
-        config_file_path = os.path.join("/tmp", CONFIG_FILE_NAME)
-        try:
-            if os.path.exists(config_file_path):
-                os.remove(config_file_path)
-                print(f"已删除文件，并重新保存：\033[33m{config_file_path}\033[0m")
-                # print(f"File cấu hình đã được lưu vào: \033[33m{config_file_path}\033[0m")
-            else:
-                print(f"文件不存在，正在保存：\033[33m{config_file_path}\033[0m")
-                # print(f"File không tồn tại, đang lưu tại: \033[33m{config_file_path}\033[0m")
-            tool.saveFile(
-                config_file_path, json.dumps(nodes, indent=2, ensure_ascii=False)
-            )
-            # print(f"配置文件已保存到 {config_file_path}")
-            # print(f"Tập tin cấu hình đã được lưu vào {config_file_path}")
-        except Exception as e:
-            os.remove(config_file_path)
-            print(f"已删除文件：\033[33m{config_file_path}\033[0m")
-            # print(f"Các file đã bị xóa: \033[33m{config_file_path}\033[0m")
-            print(f"再次保存配置文件时出错：{str(e)}")
-            # print(f"Lỗi khi lưu lại file cấu hình: {str(e)}")
+# def save_config(path, nodes):
+#     try:
+#         if "auto_backup" in providers and providers["auto_backup"]:
+#             now = datetime.now().strftime("%Y%m%d%H%M%S")
+#             if os.path.exists(path):
+#                 os.rename(path, f"{path}.{now}.bak")
+#         if os.path.exists(path):
+#             os.remove(path)
+#             print(f"已删除文件，并重新保存：\033[33m{path}\033[0m")
+#             # print(f"File cấu hình đã được lưu vào: \033[33m{path}\033[0m")
+#         else:
+#             print(f"文件不存在，正在保存：\033[33m{path}\033[0m")
+#             # print(f"File không tồn tại, đang lưu tại: \033[33m{path}\033[0m")
+#         tool.saveFile(path, json.dumps(nodes, indent=2, ensure_ascii=False))
+#     except Exception as e:
+#         print(f"保存配置文件时出错：{str(e)}")
+#         # print(f"Lỗi khi lưu file cấu hình: {str(e)}")
+#         # 如果保存出错，尝试使用 config_file_path 再次保存
+#         config_path = json.loads(temp_json_data).get("save_config_path", "config.json")
+#         CONFIG_FILE_NAME = config_path
+#         config_file_path = os.path.join("/tmp", CONFIG_FILE_NAME)
+#         try:
+#             if os.path.exists(config_file_path):
+#                 os.remove(config_file_path)
+#                 print(f"已删除文件，并重新保存：\033[33m{config_file_path}\033[0m")
+#                 # print(f"File cấu hình đã được lưu vào: \033[33m{config_file_path}\033[0m")
+#             else:
+#                 print(f"文件不存在，正在保存：\033[33m{config_file_path}\033[0m")
+#                 # print(f"File không tồn tại, đang lưu tại: \033[33m{config_file_path}\033[0m")
+#             tool.saveFile(
+#                 config_file_path, json.dumps(nodes, indent=2, ensure_ascii=False)
+#             )
+#             # print(f"配置文件已保存到 {config_file_path}")
+#             # print(f"Tập tin cấu hình đã được lưu vào {config_file_path}")
+#         except Exception as e:
+#             os.remove(config_file_path)
+#             print(f"已删除文件：\033[33m{config_file_path}\033[0m")
+#             # print(f"Các file đã bị xóa: \033[33m{config_file_path}\033[0m")
+#             print(f"再次保存配置文件时出错：{str(e)}")
+#             # print(f"Lỗi khi lưu lại file cấu hình: {str(e)}")
 
 
 def set_proxy_rule_dns(config):
@@ -657,27 +657,27 @@ def display_template(tl):
     print(print_str)
 
 
-def select_config_template(tl, selected_template_index=None):
-    if args.template_index is not None:
-        uip = args.template_index
-    else:
-        # print ('Nhập số để chọn mẫu cấu hình tương ứng (nhấn Enter để chọn mẫu cấu hình đầu tiên theo mặc định): ')
-        uip = input("输入序号，载入对应config模板（直接回车默认选第一个配置模板）：")
-        try:
-            if uip == "":
-                return 0
-            uip = int(uip)
-            if uip < 1 or uip > len(tl):
-                print("输入了错误信息！重新输入")
-                # print('Nhập thông tin không chính xác! Vui lòng nhập lại')
-                return select_config_template(tl)
-            else:
-                uip -= 1
-        except:
-            print("输入了错误信息！重新输入")
-            # print('Nhập thông tin không chính xác! Vui lòng nhập lại')
-            return select_config_template(tl)
-    return uip
+# def select_config_template(tl, selected_template_index=None):
+#     if args.template_index is not None:
+#         uip = args.template_index
+#     else:
+#         # print ('Nhập số để chọn mẫu cấu hình tương ứng (nhấn Enter để chọn mẫu cấu hình đầu tiên theo mặc định): ')
+#         uip = input("输入序号，载入对应config模板（直接回车默认选第一个配置模板）：")
+#         try:
+#             if uip == "":
+#                 return 0
+#             uip = int(uip)
+#             if uip < 1 or uip > len(tl):
+#                 print("输入了错误信息！重新输入")
+#                 # print('Nhập thông tin không chính xác! Vui lòng nhập lại')
+#                 return select_config_template(tl)
+#             else:
+#                 uip -= 1
+#         except:
+#             print("输入了错误信息！重新输入")
+#             # print('Nhập thông tin không chính xác! Vui lòng nhập lại')
+#             return select_config_template(tl)
+#     return uip
 
 
 # 自定义函数，用于解析参数为 JSON 格式
@@ -688,8 +688,8 @@ def parse_json(value):
         raise argparse.ArgumentTypeError(f"Invalid JSON: {value}")
 
 
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+# if __name__ == "__main__":
+#     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
     
 # if __name__ == "__main__":
 #     init_parsers()
