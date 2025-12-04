@@ -145,6 +145,7 @@ def get_temp_json_data():
 #             )
 #             return jsonify({"status": "error", "message": str(e)})  # 返回错误状态和消息
 
+
 # @app.route("/config/<string:id>", methods=["GET"])
 def config(id):
     devices_data = tool.load_remote_json(devices_url)
@@ -329,29 +330,26 @@ def config(id):
             # if config_content:
             #     flash("配置文件生成成功", "success")
             #     flash("Tạo file cấu hình thành công", "Thành công^^")
-        config_data = json.loads(config_content)
-        return JSONResponse(config_content)
+        return Response(json.loads(json.dumps(config_content, indent=4)))
     except subprocess.CalledProcessError as e:
         # os.environ["TEMP_JSON_DATA"] = json.dumps(
         #     json.loads(data_json["TEMP_JSON_DATA"]), indent=4, ensure_ascii=False
         # )
-        return JSONResponse(
-            json.dumps({"status": "error"}, indent=4, ensure_ascii=False),
+        return Response(
+            json.dumps({"status": "error"}, indent=4),
             status_code=500,
         )
         # return jsonify({'status': 'error', 'message': str(e)})
     except Exception as e:
         # flash(f'Error occurred while generating the configuration file: {str(e)}', 'error')
-        return JSONResponse(
+        return Response(
             json.dumps(
                 {
                     "status": "error",
-                    "message_CN": "认真看刚刚的网页说明、github写的reademe文件;",
-                    "message_VN": 'Quá thời gian phân tích đăng ký: Vui lòng kiểm tra xem liên kết đăng ký có chính xác không hoặc vui lòng chuyển sang "nogroupstemplate" và thử lại; Vui lòng không chỉnh sửa giá trị "tag", trừ khi bạn hiểu nó làm gì;',
-                    "message_EN": 'Subscription parsing timeout: Please check if the subscription link is correct or please change to "no_groups_template" and try again; Please do not modify the "tag" value unless you understand what it does;',
+                    "message": 'Subscription parsing timeout: Please check if the subscription link is correct or please change to "no_groups_template" and try again; Please do not modify the "tag" value unless you understand what it does;',
+                    "e": e,
                 },
                 indent=4,
-                ensure_ascii=False,
             ),
             status_code=500,
         )
