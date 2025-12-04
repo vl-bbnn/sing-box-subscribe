@@ -19,6 +19,7 @@ import shutil
 import tempfile  # 导入 tempfile 模块
 from datetime import datetime, timedelta
 
+from fastapi.responses import HTMLResponse, JSONResponse
 from flask.cli import load_dotenv
 
 import tool
@@ -148,8 +149,14 @@ def get_temp_json_data():
 app = FastAPI()  # создаем экземпляр приложения через конструктор
 
 
+# @app.get("/")
+# async def get_root():
+#     page = "<h1>Hello World!</h1>"  # текст ответа сервера
+#     return HTMLResponse(content=page)
+
+
 @app.get("/vpn/{id}")
-async def get_config(id):
+async def get_config(id: str):
     return config(id)
 
 
