@@ -145,21 +145,6 @@ def get_temp_json_data():
 #             )
 #             return jsonify({"status": "error", "message": str(e)})  # 返回错误状态和消息
 
-
-app = FastAPI()  # создаем экземпляр приложения через конструктор
-
-
-# @app.get("/")
-# async def get_root():
-#     page = "<h1>Hello World!</h1>"  # текст ответа сервера
-#     return HTMLResponse(content=page)
-
-
-@app.get("/vpn/{id}")
-async def get_config(id: str):
-    return config(id)
-
-
 # @app.route("/config/<string:id>", methods=["GET"])
 def config(id):
     devices_data = tool.load_remote_json(devices_url)
@@ -456,22 +441,22 @@ def config(id):
 #     return jsonify({"status": "success"})
 
 
-"""
-@app.route('/download_config', methods=['GET'])
-def download_config():
-    try:
-        if config_file_path:
-            # 清理临时配置文件
-            #cleanup_temp_config()
+# """
+# @app.route('/download_config', methods=['GET'])
+# def download_config():
+#     try:
+#         if config_file_path:
+#             # 清理临时配置文件
+#             #cleanup_temp_config()
 
-            # 使用send_file发送文件
-            return send_file(config_file_path, as_attachment=True)
-        else:
-            flash('配置文件不存在或已过期', 'error')
-            flash('File cấu hình không tồn tại hoặc đã hết hạn', 'Lỗi!!!')
-            return redirect(url_for('index'))
-    except Exception as e:
-        return str(e)  # 或者适当处理异常，例如返回一个错误页面
-"""
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0")
+#             # 使用send_file发送文件
+#             return send_file(config_file_path, as_attachment=True)
+#         else:
+#             flash('配置文件不存在或已过期', 'error')
+#             flash('File cấu hình không tồn tại hoặc đã hết hạn', 'Lỗi!!!')
+#             return redirect(url_for('index'))
+#     except Exception as e:
+#         return str(e)  # 或者适当处理异常，例如返回一个错误页面
+# """
+# if __name__ == "__main__":
+#     app.run(debug=True, host="0.0.0.0")

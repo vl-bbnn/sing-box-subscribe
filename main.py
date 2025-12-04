@@ -1,4 +1,6 @@
 import json, os, tool, time, requests, sys, importlib, argparse, yaml, ruamel.yaml
+
+from fastapi import FastAPI
 import re
 from datetime import datetime
 from urllib.parse import urlparse
@@ -9,6 +11,20 @@ from parsers.clash2base64 import clash2v2ray
 parsers_mod = {}
 providers = None
 color_code = [31, 32, 33, 34, 35, 36, 91, 92, 93, 94, 95, 96]
+
+
+app = FastAPI()  # создаем экземпляр приложения через конструктор
+
+
+# @app.get("/")
+# async def get_root():
+#     page = "<h1>Hello World!</h1>"  # текст ответа сервера
+#     return HTMLResponse(content=page)
+
+
+@app.get("/vpn/{id}")
+async def get_config(id: str):
+    return config(id)
 
 
 def loop_color(text):
