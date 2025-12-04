@@ -5,7 +5,7 @@ import re
 from datetime import datetime
 from urllib.parse import urlparse
 from collections import OrderedDict
-from api.app import TEMP_DIR
+from api.app import config
 from parsers.clash2base64 import clash2v2ray
 
 parsers_mod = {}
