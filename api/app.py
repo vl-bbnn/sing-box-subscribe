@@ -330,20 +330,19 @@ def config(id):
             #     flash("配置文件生成成功", "success")
             #     flash("Tạo file cấu hình thành công", "Thành công^^")
         config_data = json.loads(config_content)
-        return Response(config_content)
+        return JSONResponse(config_content)
     except subprocess.CalledProcessError as e:
         # os.environ["TEMP_JSON_DATA"] = json.dumps(
         #     json.loads(data_json["TEMP_JSON_DATA"]), indent=4, ensure_ascii=False
         # )
-        return Response(
+        return JSONResponse(
             json.dumps({"status": "error"}, indent=4, ensure_ascii=False),
-            content_type="application/json; charset=utf-8",
-            status=500,
+            status_code=500,
         )
         # return jsonify({'status': 'error', 'message': str(e)})
     except Exception as e:
         # flash(f'Error occurred while generating the configuration file: {str(e)}', 'error')
-        return Response(
+        return JSONResponse(
             json.dumps(
                 {
                     "status": "error",
@@ -354,8 +353,7 @@ def config(id):
                 indent=4,
                 ensure_ascii=False,
             ),
-            content_type="application/json; charset=utf-8",
-            status=500,
+            status_code=500,
         )
 
 

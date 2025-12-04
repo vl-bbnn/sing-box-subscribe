@@ -1,5 +1,7 @@
 import json, os, tool, time, requests, sys, importlib, argparse, yaml, ruamel.yaml
 
+import uvicorn
+
 from fastapi import FastAPI
 import re
 from datetime import datetime
@@ -687,45 +689,48 @@ def parse_json(value):
 
 
 if __name__ == "__main__":
-    init_parsers()
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--temp_json_data", type=parse_json, help="临时内容")
-    parser.add_argument("--template_index", type=int, help="模板序号")
-    args = parser.parse_args()
-    temp_json_data = args.temp_json_data
-    if temp_json_data and temp_json_data != "{}":
-        providers = json.loads(temp_json_data)
-    # else:
-    #     providers = tool.load_json('providers.json')  # 加载本地 providers.json
-    if providers.get("config_template"):
-        config_template_path = providers["config_template"]
-        print("选择: \033[33m" + config_template_path + "\033[0m")
-        # print ('Mẫu cấu hình sử dụng: \033[33m' + template_list[uip] + '.json\033[0m')
-        response = requests.get(providers["config_template"])
-        response.raise_for_status()
-        config = response.json()
-    # else:
-    #     template_list = get_template()
-    #     if len(template_list) < 1:
-    #         print('没有找到模板文件')
-    #         # print('Không tìm thấy file mẫu')
-    #         sys.exit()
-    #     display_template(template_list)
-    #     uip = select_config_template(template_list, selected_template_index=args.template_index)
-    #     config_template_path = 'config_template/' + template_list[uip] + '.json'
-    #     print('选择: \033[33m' + template_list[uip] + '.json\033[0m')
-    #     # print ('Mẫu cấu hình sử dụng: \033[33m' + template_list[uip] + '.json\033[0m')
-    #     config = tool.load_json(config_template_path)
-    nodes = process_subscribes(providers["subscribes"])
-    if providers.get("Only-nodes"):
-        combined_contents = []
-        for sub_tag, contents in nodes.items():
-            # 遍历每个机场的内容
-            for content in contents:
-                # 将内容添加到新列表中
-                combined_contents.append(content)
-        final_config = combined_contents  # 只返回节点信息
-    else:
-        final_config = combin_to_config(config, nodes)  # 节点信息添加到模板
-    save_config(providers["save_config_path"], final_config)
-    # updateLocalConfig('http://127.0.0.1:9090',providers['save_config_path'])
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    
+# if __name__ == "__main__":
+#     init_parsers()
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("--temp_json_data", type=parse_json, help="临时内容")
+#     parser.add_argument("--template_index", type=int, help="模板序号")
+#     args = parser.parse_args()
+#     temp_json_data = args.temp_json_data
+#     if temp_json_data and temp_json_data != "{}":
+#         providers = json.loads(temp_json_data)
+#     # else:
+#     #     providers = tool.load_json('providers.json')  # 加载本地 providers.json
+#     if providers.get("config_template"):
+#         config_template_path = providers["config_template"]
+#         print("选择: \033[33m" + config_template_path + "\033[0m")
+#         # print ('Mẫu cấu hình sử dụng: \033[33m' + template_list[uip] + '.json\033[0m')
+#         response = requests.get(providers["config_template"])
+#         response.raise_for_status()
+#         config = response.json()
+#     # else:
+#     #     template_list = get_template()
+#     #     if len(template_list) < 1:
+#     #         print('没有找到模板文件')
+#     #         # print('Không tìm thấy file mẫu')
+#     #         sys.exit()
+#     #     display_template(template_list)
+#     #     uip = select_config_template(template_list, selected_template_index=args.template_index)
+#     #     config_template_path = 'config_template/' + template_list[uip] + '.json'
+#     #     print('选择: \033[33m' + template_list[uip] + '.json\033[0m')
+#     #     # print ('Mẫu cấu hình sử dụng: \033[33m' + template_list[uip] + '.json\033[0m')
+#     #     config = tool.load_json(config_template_path)
+#     nodes = process_subscribes(providers["subscribes"])
+#     if providers.get("Only-nodes"):
+#         combined_contents = []
+#         for sub_tag, contents in nodes.items():
+#             # 遍历每个机场的内容
+#             for content in contents:
+#                 # 将内容添加到新列表中
+#                 combined_contents.append(content)
+#         final_config = combined_contents  # 只返回节点信息
+#     else:
+#         final_config = combin_to_config(config, nodes)  # 节点信息添加到模板
+#     save_config(providers["save_config_path"], final_config)
+#     # updateLocalConfig('http://127.0.0.1:9090',providers['save_config_path'])
