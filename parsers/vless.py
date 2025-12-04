@@ -3,10 +3,10 @@ from urllib.parse import urlparse, parse_qs, unquote
 def parse(data):
     info = data[:]
     server_info = urlparse(info)
-    try:
-        netloc = tool.b64Decode(server_info.netloc).decode('utf-8')
-    except:
-        netloc = server_info.netloc
+    # try:
+    #     netloc = tool.b64Decode(server_info.netloc).decode('utf-8')
+    # except:
+    netloc = server_info.netloc
     _netloc = netloc.split("@")
     try:
         _netloc_parts = _netloc[1].rsplit(":", 1)

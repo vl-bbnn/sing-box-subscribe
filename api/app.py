@@ -131,8 +131,8 @@ def config(id):
 
     subscribes = temp_json_data['subscribes']
 
-    if len(subscribes) > 0:
-        subscribe = subscribes[0]
+    # if len(subscribes) > 0:
+    #     subscribe = subscribes[0]
 
     # if len(subscribes) > 1:
     #     subscribe2 = subscribes[1]
@@ -237,8 +237,9 @@ def config(id):
     #     full_url = parts[0] + '/api/v4/projects/' + parts[1].replace('/', '%2F', 1)
     # print (full_url)
     # url_parts = full_url.split('|')
-    if device_data['url']:
-        subscribe['url'] = device_data['url']
+    if device_data['urls']:
+        for subscribe in subscribes:
+            subscribe['urls'] = device_data['urls']
         # subscribe['ex-node-name'] = enn_param
         # subscribe2['url'] = full_url.split('url=', 1)[-1].split('|')[1] if full_url.startswith('url') else full_url.split('|')[1]
         # subscribe2['emoji'] = 1
