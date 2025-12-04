@@ -1,4 +1,15 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response
+from fastapi import FastAPI, Response
+
+# from flask import (
+#     Flask,
+#     render_template,
+#     request,
+#     redirect,
+#     url_for,
+#     flash,
+#     jsonify,
+#     Response,
+# )
 import json
 import os
 import sys
@@ -12,8 +23,8 @@ from flask.cli import load_dotenv
 
 import tool
 
-app = Flask(__name__, template_folder='../templates')  # 指定模板文件夹的路径
-app.secret_key = 'sing-box'  # 替换为实际的密钥
+# app = Flask(__name__, template_folder="../templates")  # 指定模板文件夹的路径
+# app.secret_key = "sing-box"  # 替换为实际的密钥
 # data_json = {}
 # providers = json.dumps(tool.load_json('providers.json'))
 # os.environ['TEMP_JSON_DATA'] = providers
@@ -21,7 +32,7 @@ app.secret_key = 'sing-box'  # 替换为实际的密钥
 
 load_dotenv()
 
-devices_url = os.getenv('DEVICES_URL')
+devices_url = os.getenv("DEVICES_URL")
 
 # 获取系统默认的临时目录路径
 TEMP_DIR = tempfile.gettempdir()
@@ -39,12 +50,14 @@ def cleanup_temp_config():
         config_expiry_time = None
         config_file_path = None
 
+
 # 获取临时 JSON 数据
 def get_temp_json_data():
-    temp_json_data = os.environ.get('TEMP_JSON_DATA')
+    temp_json_data = os.environ.get("TEMP_JSON_DATA")
     if temp_json_data:
         return json.loads(temp_json_data)
     return {}
+
 
 # 获取config_template目录下的模板文件列表
 # def get_template_list():
@@ -93,43 +106,67 @@ def get_temp_json_data():
 #         flash(f'Có lỗi khi cập nhật file Providers.json; {str(e)}', 'Lỗi!!!')
 #     return redirect(url_for('index'))
 
-@app.route('/edit_temp_json', methods=['GET', 'POST'])
-def edit_temp_json():
-    if request.method == 'POST':
-        try:
-            new_temp_json_data = request.form.get('temp_json_data')
-            print (new_temp_json_data)
-            if new_temp_json_data:
-                temp_json_data = json.loads(new_temp_json_data)
-                os.environ['TEMP_JSON_DATA'] = json.dumps(temp_json_data, indent=4, ensure_ascii=False)
-                #flash('TEMP_JSON_DATA 已更新', 'success')
-                #flash('TEMP_JSON_DATA đã được cập nhật', 'Thành công^^')
-                return jsonify({'status': 'success'})  # 返回成功状态
-            else:
-                return jsonify({'status': 'error', 'message': 'TEMP_JSON_DATA 不能为空(không thể trống)'}, content_type='application/json; charset=utf-8')  # 返回错误状态和消息
-        except Exception as e:
-            flash('TEMP_JSON_DATA 不能为空', 'error')
-            flash('TEMP_JSON_DATA 格式出错：注意订阅链接末尾不要有换行，要在双引号""里面！！！')
-            flash('TEMP_JSON_DATA không thể trống', 'Lỗi!!!')
-            flash('Lỗi định dạng TEMP_JSON_DATA: lưu ý rằng liên kết đăng ký không được có ký tự xuống dòng ở cuối, mà phải nằm trong dấu ngoặc kép ""')
-            flash('TEMP_JSON_DATA cannot be empty', 'error')
-            flash(f'Error updating TEMP_JSON_DATA: note that the subscription link should not have a newline at the end, but should be inside double quotes ""')
-            return jsonify({'status': 'error', 'message': str(e)})  # 返回错误状态和消息
 
-@app.route('/config/<string:id>', methods=['GET'])
+# @app.route("/edit_temp_json", methods=["GET", "POST"])
+# def edit_temp_json():
+#     if request.method == "POST":
+#         try:
+#             new_temp_json_data = request.form.get("temp_json_data")
+#             print(new_temp_json_data)
+#             if new_temp_json_data:
+#                 temp_json_data = json.loads(new_temp_json_data)
+#                 os.environ["TEMP_JSON_DATA"] = json.dumps(
+#                     temp_json_data, indent=4, ensure_ascii=False
+#                 )
+#                 # flash('TEMP_JSON_DATA 已更新', 'success')
+#                 # flash('TEMP_JSON_DATA đã được cập nhật', 'Thành công^^')
+#                 return jsonify({"status": "success"})  # 返回成功状态
+#             else:
+#                 return jsonify(
+#                     {
+#                         "status": "error",
+#                         "message": "TEMP_JSON_DATA 不能为空(không thể trống)",
+#                     },
+#                     content_type="application/json; charset=utf-8",
+#                 )  # 返回错误状态和消息
+#         except Exception as e:
+#             flash("TEMP_JSON_DATA 不能为空", "error")
+#             flash(
+#                 'TEMP_JSON_DATA 格式出错：注意订阅链接末尾不要有换行，要在双引号""里面！！！'
+#             )
+#             flash("TEMP_JSON_DATA không thể trống", "Lỗi!!!")
+#             flash(
+#                 'Lỗi định dạng TEMP_JSON_DATA: lưu ý rằng liên kết đăng ký không được có ký tự xuống dòng ở cuối, mà phải nằm trong dấu ngoặc kép ""'
+#             )
+#             flash("TEMP_JSON_DATA cannot be empty", "error")
+#             flash(
+#                 f'Error updating TEMP_JSON_DATA: note that the subscription link should not have a newline at the end, but should be inside double quotes ""'
+#             )
+#             return jsonify({"status": "error", "message": str(e)})  # 返回错误状态和消息
+
+
+app = FastAPI()  # создаем экземпляр приложения через конструктор
+
+
+@app.get("/vpn/{id}")
+async def get_config(id):
+    return config(id)
+
+
+# @app.route("/config/<string:id>", methods=["GET"])
 def config(id):
     devices_data = tool.load_remote_json(devices_url)
     device_data = devices_data[id]
 
     if not device_data:
         return
-    
-    if device_data['providers']:
-        providers_url = tool.localUrlToGlobal(device_data['providers'], devices_url)
-    
+
+    if device_data["providers"]:
+        providers_url = tool.localUrlToGlobal(device_data["providers"], devices_url)
+
     temp_json_data = tool.load_remote_json(providers_url)
 
-    subscribes = temp_json_data['subscribes']
+    subscribes = temp_json_data["subscribes"]
 
     # if len(subscribes) > 0:
     #     subscribe = subscribes[0]
@@ -200,7 +237,7 @@ def config(id):
     #     else:
     #         full_url = f"{encoded_url}"
 
-    #print (f"full_url: {full_url}")
+    # print (f"full_url: {full_url}")
 
     # emoji_param = request.args.get('emoji', '')
     # file_param = request.args.get('file', '')
@@ -237,9 +274,9 @@ def config(id):
     #     full_url = parts[0] + '/api/v4/projects/' + parts[1].replace('/', '%2F', 1)
     # print (full_url)
     # url_parts = full_url.split('|')
-    if device_data['urls']:
+    if device_data["urls"]:
         for subscribe in subscribes:
-            subscribe['urls'] = device_data['urls']
+            subscribe["urls"] = device_data["urls"]
         # subscribe['ex-node-name'] = enn_param
         # subscribe2['url'] = full_url.split('url=', 1)[-1].split('|')[1] if full_url.startswith('url') else full_url.split('|')[1]
         # subscribe2['emoji'] = 1
@@ -260,88 +297,157 @@ def config(id):
     #     subscribe['ex-node-name'] = enn_param
     #     subscribe['User-Agent'] = ua_param if ua_param else 'v2rayng'
     # temp_json_data['exclude_protocol'] = eps_param if eps_param else temp_json_data.get('exclude_protocol', '')
-    if device_data['template']:
-        template_url = tool.localUrlToGlobal(device_data['template'], devices_url)
-        temp_json_data['config_template'] = template_url
-    #print (f"Custom Page for {url} with link={full_url}, emoji={emoji_param}, file={file_param}, tag={tag_param}, UA={ua_param}, prefix={pre_param}")
-    #page_content = f"生成的页面内容：{full_url}"
-    #return page_content
+    if device_data["template"]:
+        template_url = tool.localUrlToGlobal(device_data["template"], devices_url)
+        temp_json_data["config_template"] = template_url
+    # print (f"Custom Page for {url} with link={full_url}, emoji={emoji_param}, file={file_param}, tag={tag_param}, UA={ua_param}, prefix={pre_param}")
+    # page_content = f"生成的页面内容：{full_url}"
+    # return page_content
     try:
-        selected_template_index = '0'
+        selected_template_index = "0"
         # if file_param.isdigit():
         #     temp_json_data['config_template'] = ''
         #     selected_template_index = str(int(file_param) - 1)
-        temp_json_data_str = json.dumps(json.dumps(temp_json_data, indent=4, ensure_ascii=False), indent=4, ensure_ascii=False)
-        subprocess.check_call([sys.executable, 'main.py', '--template_index', selected_template_index, '--temp_json_data', temp_json_data_str])
+        temp_json_data_str = json.dumps(
+            json.dumps(temp_json_data, indent=4, ensure_ascii=False),
+            indent=4,
+            ensure_ascii=False,
+        )
+        subprocess.check_call(
+            [
+                sys.executable,
+                "main.py",
+                "--template_index",
+                selected_template_index,
+                "--temp_json_data",
+                temp_json_data_str,
+            ]
+        )
         CONFIG_FILE_NAME = temp_json_data.get("save_config_path", "config.json")
         if CONFIG_FILE_NAME.startswith("./"):
             CONFIG_FILE_NAME = CONFIG_FILE_NAME[2:]
         # 设置配置文件的完整路径
-        config_file_path = os.path.join('/tmp/', CONFIG_FILE_NAME) 
+        config_file_path = os.path.join("/tmp/", CONFIG_FILE_NAME)
         if not os.path.exists(config_file_path):
-            config_file_path = CONFIG_FILE_NAME  # 使用相对于当前工作目录的路径 
-        os.environ['TEMP_JSON_DATA'] = temp_json_data_str
+            config_file_path = CONFIG_FILE_NAME  # 使用相对于当前工作目录的路径
+        os.environ["TEMP_JSON_DATA"] = temp_json_data_str
         # 读取配置文件内容
-        with open(config_file_path, 'r', encoding='utf-8') as config_file:
+        with open(config_file_path, "r", encoding="utf-8") as config_file:
             config_content = config_file.read()
-            if config_content:
-                flash('配置文件生成成功', 'success')
-                flash('Tạo file cấu hình thành công', 'Thành công^^')
+            # if config_content:
+            #     flash("配置文件生成成功", "success")
+            #     flash("Tạo file cấu hình thành công", "Thành công^^")
         config_data = json.loads(config_content)
-        return Response(config_content, content_type='text/plain; charset=utf-8')
+        return Response(config_content)
     except subprocess.CalledProcessError as e:
-        os.environ['TEMP_JSON_DATA'] = json.dumps(json.loads(data_json['TEMP_JSON_DATA']), indent=4, ensure_ascii=False)
-        return Response(json.dumps({'status': 'error'}, indent=4,ensure_ascii=False), content_type='application/json; charset=utf-8', status=500)
-        #return jsonify({'status': 'error', 'message': str(e)}) 
+        # os.environ["TEMP_JSON_DATA"] = json.dumps(
+        #     json.loads(data_json["TEMP_JSON_DATA"]), indent=4, ensure_ascii=False
+        # )
+        return Response(
+            json.dumps({"status": "error"}, indent=4, ensure_ascii=False),
+            content_type="application/json; charset=utf-8",
+            status=500,
+        )
+        # return jsonify({'status': 'error', 'message': str(e)})
     except Exception as e:
-        #flash(f'Error occurred while generating the configuration file: {str(e)}', 'error')
-        return Response(json.dumps({'status': 'error', 'message_CN': '认真看刚刚的网页说明、github写的reademe文件;', 'message_VN': 'Quá thời gian phân tích đăng ký: Vui lòng kiểm tra xem liên kết đăng ký có chính xác không hoặc vui lòng chuyển sang "nogroupstemplate" và thử lại; Vui lòng không chỉnh sửa giá trị "tag", trừ khi bạn hiểu nó làm gì;', 'message_EN': 'Subscription parsing timeout: Please check if the subscription link is correct or please change to "no_groups_template" and try again; Please do not modify the "tag" value unless you understand what it does;'}, indent=4,ensure_ascii=False), content_type='application/json; charset=utf-8', status=500)
+        # flash(f'Error occurred while generating the configuration file: {str(e)}', 'error')
+        return Response(
+            json.dumps(
+                {
+                    "status": "error",
+                    "message_CN": "认真看刚刚的网页说明、github写的reademe文件;",
+                    "message_VN": 'Quá thời gian phân tích đăng ký: Vui lòng kiểm tra xem liên kết đăng ký có chính xác không hoặc vui lòng chuyển sang "nogroupstemplate" và thử lại; Vui lòng không chỉnh sửa giá trị "tag", trừ khi bạn hiểu nó làm gì;',
+                    "message_EN": 'Subscription parsing timeout: Please check if the subscription link is correct or please change to "no_groups_template" and try again; Please do not modify the "tag" value unless you understand what it does;',
+                },
+                indent=4,
+                ensure_ascii=False,
+            ),
+            content_type="application/json; charset=utf-8",
+            status=500,
+        )
 
-@app.route('/generate_config', methods=['POST'])
-def generate_config():
-    try:
-        selected_template_index = request.form.get('template_index')
-        if not selected_template_index:
-            flash('请选择一个配置模板', 'error')
-            flash('Vui lòng chọn một mẫu cấu hình', 'Lỗi!!!')
-            return redirect(url_for('index'))
-        temp_json_data = json.dumps(os.environ['TEMP_JSON_DATA'], indent=4, ensure_ascii=False)
-        # 修改这里：执行main.py并传递模板序号作为命令行参数，如果未指定，则传递空字符串
-        subprocess.check_call([sys.executable, 'main.py', '--template_index', selected_template_index, '--temp_json_data', temp_json_data])
-        CONFIG_FILE_NAME = json.loads(os.environ['TEMP_JSON_DATA']).get("save_config_path", "config.json")
-        if CONFIG_FILE_NAME.startswith("./"):
-            CONFIG_FILE_NAME = CONFIG_FILE_NAME[2:]
-        # 设置配置文件的完整路径
-        config_file_path = os.path.join('/tmp/', CONFIG_FILE_NAME) 
-        if not os.path.exists(config_file_path):
-            config_file_path = CONFIG_FILE_NAME  # 使用相对于当前工作目录的路径 
-        os.environ['TEMP_JSON_DATA'] = json.dumps(json.loads(data_json['TEMP_JSON_DATA']), indent=4, ensure_ascii=False)
-        # 读取配置文件内容
-        with open(config_file_path, 'r', encoding='utf-8') as config_file:
-            config_content = config_file.read()
-            if config_content:
-                flash('配置文件生成成功', 'success')
-                flash('Tạo file cấu hình thành công', 'Thành công^^')
-        config_data = json.loads(config_content)
-        return Response(config_content, content_type='text/plain; charset=utf-8')
-    except subprocess.CalledProcessError as e:
-        os.environ['TEMP_JSON_DATA'] = json.dumps(json.loads(data_json['TEMP_JSON_DATA']), indent=4, ensure_ascii=False)
-        return Response(json.dumps({'status': 'error'}, indent=4,ensure_ascii=False), content_type='application/json; charset=utf-8', status=500)
-    except Exception as e:
-        #flash(f'Error occurred while generating the configuration file: {str(e)}', 'error')
-        return Response(json.dumps({'status': 'error', 'message_CN': '认真看刚刚的网页说明、github写的reademe文件;', 'message_VN': 'Quá thời gian phân tích đăng ký: Vui lòng kiểm tra xem liên kết đăng ký có chính xác không hoặc vui lòng chuyển sang "nogroupstemplate" và thử lại; Vui lòng không chỉnh sửa giá trị "tag", trừ khi bạn hiểu nó làm gì;', 'message_EN': 'Subscription parsing timeout: Please check if the subscription link is correct or please change to "no_groups_template" and try again; Please do not modify the "tag" value unless you understand what it does;'}, indent=4,ensure_ascii=False), content_type='application/json; charset=utf-8', status=500)
-    #return redirect(url_for('index'))
 
-@app.route('/clear_temp_json_data', methods=['POST'])
-def clear_temp_json_data():
-    try:
-        os.environ['TEMP_JSON_DATA'] = json.dumps({}, indent=4, ensure_ascii=False)
-        flash('TEMP_JSON_DATA 已清空', 'success')
-        flash('TEMP_JSON_DATA đã được làm trống', 'Thành công^^')
-    except Exception as e:
-        flash(f'清空 TEMP_JSON_DATA 时出错：{str(e)}', 'error')
-        flash(f'Có lỗi khi làm trống TEMP_JSON_DATA: {str(e)}', 'Lỗi!!!')
-    return jsonify({'status': 'success'})
+# @app.route("/generate_config", methods=["POST"])
+# def generate_config():
+#     try:
+#         selected_template_index = request.form.get("template_index")
+#         if not selected_template_index:
+#             flash("请选择一个配置模板", "error")
+#             flash("Vui lòng chọn một mẫu cấu hình", "Lỗi!!!")
+#             return redirect(url_for("index"))
+#         temp_json_data = json.dumps(
+#             os.environ["TEMP_JSON_DATA"], indent=4, ensure_ascii=False
+#         )
+#         # 修改这里：执行main.py并传递模板序号作为命令行参数，如果未指定，则传递空字符串
+#         subprocess.check_call(
+#             [
+#                 sys.executable,
+#                 "main.py",
+#                 "--template_index",
+#                 selected_template_index,
+#                 "--temp_json_data",
+#                 temp_json_data,
+#             ]
+#         )
+#         CONFIG_FILE_NAME = json.loads(os.environ["TEMP_JSON_DATA"]).get(
+#             "save_config_path", "config.json"
+#         )
+#         if CONFIG_FILE_NAME.startswith("./"):
+#             CONFIG_FILE_NAME = CONFIG_FILE_NAME[2:]
+#         # 设置配置文件的完整路径
+#         config_file_path = os.path.join("/tmp/", CONFIG_FILE_NAME)
+#         if not os.path.exists(config_file_path):
+#             config_file_path = CONFIG_FILE_NAME  # 使用相对于当前工作目录的路径
+#         os.environ["TEMP_JSON_DATA"] = json.dumps(
+#             json.loads(data_json["TEMP_JSON_DATA"]), indent=4, ensure_ascii=False
+#         )
+#         # 读取配置文件内容
+#         with open(config_file_path, "r", encoding="utf-8") as config_file:
+#             config_content = config_file.read()
+#             if config_content:
+#                 flash("配置文件生成成功", "success")
+#                 flash("Tạo file cấu hình thành công", "Thành công^^")
+#         config_data = json.loads(config_content)
+#         return Response(config_content, content_type="text/plain; charset=utf-8")
+#     except subprocess.CalledProcessError as e:
+#         os.environ["TEMP_JSON_DATA"] = json.dumps(
+#             json.loads(data_json["TEMP_JSON_DATA"]), indent=4, ensure_ascii=False
+#         )
+#         return Response(
+#             json.dumps({"status": "error"}, indent=4, ensure_ascii=False),
+#             content_type="application/json; charset=utf-8",
+#             status=500,
+#         )
+#     except Exception as e:
+#         # flash(f'Error occurred while generating the configuration file: {str(e)}', 'error')
+#         return Response(
+#             json.dumps(
+#                 {
+#                     "status": "error",
+#                     "message_CN": "认真看刚刚的网页说明、github写的reademe文件;",
+#                     "message_VN": 'Quá thời gian phân tích đăng ký: Vui lòng kiểm tra xem liên kết đăng ký có chính xác không hoặc vui lòng chuyển sang "nogroupstemplate" và thử lại; Vui lòng không chỉnh sửa giá trị "tag", trừ khi bạn hiểu nó làm gì;',
+#                     "message_EN": 'Subscription parsing timeout: Please check if the subscription link is correct or please change to "no_groups_template" and try again; Please do not modify the "tag" value unless you understand what it does;',
+#                 },
+#                 indent=4,
+#                 ensure_ascii=False,
+#             ),
+#             content_type="application/json; charset=utf-8",
+#             status=500,
+#         )
+#     # return redirect(url_for('index'))
+
+
+# # @app.route("/clear_temp_json_data", methods=["POST"])
+# def clear_temp_json_data():
+#     try:
+#         os.environ["TEMP_JSON_DATA"] = json.dumps({}, indent=4, ensure_ascii=False)
+#         flash("TEMP_JSON_DATA 已清空", "success")
+#         flash("TEMP_JSON_DATA đã được làm trống", "Thành công^^")
+#     except Exception as e:
+#         flash(f"清空 TEMP_JSON_DATA 时出错：{str(e)}", "error")
+#         flash(f"Có lỗi khi làm trống TEMP_JSON_DATA: {str(e)}", "Lỗi!!!")
+#     return jsonify({"status": "success"})
+
 
 """
 @app.route('/download_config', methods=['GET'])
@@ -360,5 +466,5 @@ def download_config():
     except Exception as e:
         return str(e)  # 或者适当处理异常，例如返回一个错误页面
 """
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0")
