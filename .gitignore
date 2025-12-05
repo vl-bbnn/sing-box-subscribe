@@ -12,5 +12,6 @@ ENV/
 env.bak/ 
 venv.bak/ 
 
+/urls
 /configs
 config.json

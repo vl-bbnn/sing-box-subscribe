@@ -117,6 +117,7 @@ def config(id):
                 print(f"link: {link}")
                 if link:
                     urls = fetch_urls(link)
+                    tool.save_config(f"urls/{label}.json", urls)
                     device_data["urls"].update(urls)
 
         nodes = tool.process_subscribes(device_data["urls"])
