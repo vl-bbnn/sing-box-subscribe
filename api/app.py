@@ -1,6 +1,6 @@
 import json
 
-from fastapi.responses import JSONResponse
+from fastapi.responses import Response
 import tool
 
 
@@ -23,9 +23,9 @@ def config(id):
         config = tool.load_json("configs/" + device_data["template"])
         nodes = tool.process_subscribes(device_data["urls"])
         final_config = tool.combin_to_config(config, nodes)
-        return JSONResponse(json.loads(json.dumps(final_config, indent=4)))
+        return Response(json.dumps(final_config, indent=4))
     except Exception as e:
-        return JSONResponse(
+        return Response(
             json.dumps(
                 {
                     "status": "error",
