@@ -2,6 +2,8 @@ import json
 
 import os
 import re
+from dotenv import load_dotenv
+from fastapi import HTTPException
 import requests
 from urllib.parse import urlparse, unquote
 from collections import defaultdict
@@ -104,24 +106,21 @@ def config(id):
         return
 
     try:
+        load_dotenv()
         tool.init_parsers()
         tool.update_providers()
         config = tool.load_json("configs/" + device_data["template"])
+
         for label in ["WHITE_LISTS_MOBILE", "WHITE_LISTS_CABLE", "BLACK_VLESS_RUS"]:
-            link = os.environ[label]
-            urls = fetch_urls(link)
-            device_data["urls"].update(urls)
+            link = os.environ.get(label, "")
+            if link:
+                print(f"link: {link}")
+                if link:
+                    urls = fetch_urls(link)
+                    device_data["urls"].update(urls)
+
         nodes = tool.process_subscribes(device_data["urls"])
         final_config = tool.combin_to_config(config, nodes)
         return Response(json.dumps(final_config, indent=4))
     except Exception as e:
-        return Response(
-            json.dumps(
-                {
-                    "status": "error",
-                    "message": e,
-                },
-                indent=4,
-            ),
-            status_code=500,
-        )
+        raise HTTPException(status_code=500, detail=str(e))
