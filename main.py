@@ -55,32 +55,16 @@ def init_parsers():
 
 def process_subscribes(subscribes):
     nodes = {}
-    for subscribe in subscribes:
-        if "enabled" in subscribe and not subscribe["enabled"]:
-            continue
-        # if 'sing-box-subscribe-doraemon.vercel.app' in subscribe['urls']:
-        #     continue
+    for k, v in subscribes[0]["urls"].items():
+        for url in v:
+            _nodes = get_nodes(url)
+            if _nodes and len(_nodes) > 0:
+                key = k + "-subgroup"
 
-        for url in subscribe["urls"][subscribe["tag"]]:
-            if url:
-                _nodes = get_nodes(url)
-                if _nodes and len(_nodes) > 0:
-                    add_prefix(_nodes, subscribe)
-                    add_emoji(_nodes, subscribe)
-                    nodefilter(_nodes, subscribe)
+                if not nodes.get(key):
+                    nodes[key] = []
 
-                    if subscribe.get("subgroup"):
-                        key = subscribe["subgroup"] + "-" + "subgroup"
-                    else:
-                        key = subscribe["tag"]
-
-                    if not nodes.get(key):
-                        nodes[key] = []
-
-                    nodes[key] += _nodes
-                else:
-                    print("没有在此订阅下找到节点，跳过")
-                    # print('Không tìm thấy proxy trong link thuê bao này, bỏ qua')
+                nodes[key] += _nodes
 
     tool.proDuplicateNodeName(nodes)
     return nodes
