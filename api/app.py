@@ -148,16 +148,14 @@ def get_temp_json_data():
 
 # @app.route("/config/<string:id>", methods=["GET"])
 def config(id):
-    devices_data = tool.load_remote_json(devices_url)
+    devices_data = tool.load_json("configs/devices.json")
     device_data = devices_data[id]
 
     if not device_data:
         return
 
     if device_data["providers"]:
-        providers_url = tool.localUrlToGlobal(device_data["providers"], devices_url)
-
-    temp_json_data = tool.load_remote_json(providers_url)
+        temp_json_data = tool.load_json("configs/" + device_data["providers"])
 
     subscribes = temp_json_data["subscribes"]
 
@@ -291,8 +289,7 @@ def config(id):
     #     subscribe['User-Agent'] = ua_param if ua_param else 'v2rayng'
     # temp_json_data['exclude_protocol'] = eps_param if eps_param else temp_json_data.get('exclude_protocol', '')
     if device_data["template"]:
-        template_url = tool.localUrlToGlobal(device_data["template"], devices_url)
-        temp_json_data["config_template"] = template_url
+        temp_json_data["config_template"] = "configs/" + device_data["template"]
     # print (f"Custom Page for {url} with link={full_url}, emoji={emoji_param}, file={file_param}, tag={tag_param}, UA={ua_param}, prefix={pre_param}")
     # page_content = f"生成的页面内容：{full_url}"
     # return page_content

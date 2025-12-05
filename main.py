@@ -360,46 +360,46 @@ def get_content_form_file(url):
         return data
 
 
-# def save_config(path, nodes):
-#     try:
-#         if "auto_backup" in providers and providers["auto_backup"]:
-#             now = datetime.now().strftime("%Y%m%d%H%M%S")
-#             if os.path.exists(path):
-#                 os.rename(path, f"{path}.{now}.bak")
-#         if os.path.exists(path):
-#             os.remove(path)
-#             print(f"已删除文件，并重新保存：\033[33m{path}\033[0m")
-#             # print(f"File cấu hình đã được lưu vào: \033[33m{path}\033[0m")
-#         else:
-#             print(f"文件不存在，正在保存：\033[33m{path}\033[0m")
-#             # print(f"File không tồn tại, đang lưu tại: \033[33m{path}\033[0m")
-#         tool.saveFile(path, json.dumps(nodes, indent=2, ensure_ascii=False))
-#     except Exception as e:
-#         print(f"保存配置文件时出错：{str(e)}")
-#         # print(f"Lỗi khi lưu file cấu hình: {str(e)}")
-#         # 如果保存出错，尝试使用 config_file_path 再次保存
-#         config_path = json.loads(temp_json_data).get("save_config_path", "config.json")
-#         CONFIG_FILE_NAME = config_path
-#         config_file_path = os.path.join("/tmp", CONFIG_FILE_NAME)
-#         try:
-#             if os.path.exists(config_file_path):
-#                 os.remove(config_file_path)
-#                 print(f"已删除文件，并重新保存：\033[33m{config_file_path}\033[0m")
-#                 # print(f"File cấu hình đã được lưu vào: \033[33m{config_file_path}\033[0m")
-#             else:
-#                 print(f"文件不存在，正在保存：\033[33m{config_file_path}\033[0m")
-#                 # print(f"File không tồn tại, đang lưu tại: \033[33m{config_file_path}\033[0m")
-#             tool.saveFile(
-#                 config_file_path, json.dumps(nodes, indent=2, ensure_ascii=False)
-#             )
-#             # print(f"配置文件已保存到 {config_file_path}")
-#             # print(f"Tập tin cấu hình đã được lưu vào {config_file_path}")
-#         except Exception as e:
-#             os.remove(config_file_path)
-#             print(f"已删除文件：\033[33m{config_file_path}\033[0m")
-#             # print(f"Các file đã bị xóa: \033[33m{config_file_path}\033[0m")
-#             print(f"再次保存配置文件时出错：{str(e)}")
-#             # print(f"Lỗi khi lưu lại file cấu hình: {str(e)}")
+def save_config(path, nodes):
+    try:
+        if "auto_backup" in providers and providers["auto_backup"]:
+            now = datetime.now().strftime("%Y%m%d%H%M%S")
+            if os.path.exists(path):
+                os.rename(path, f"{path}.{now}.bak")
+        if os.path.exists(path):
+            os.remove(path)
+            print(f"已删除文件，并重新保存：\033[33m{path}\033[0m")
+            # print(f"File cấu hình đã được lưu vào: \033[33m{path}\033[0m")
+        else:
+            print(f"文件不存在，正在保存：\033[33m{path}\033[0m")
+            # print(f"File không tồn tại, đang lưu tại: \033[33m{path}\033[0m")
+        tool.saveFile(path, json.dumps(nodes, indent=2, ensure_ascii=False))
+    except Exception as e:
+        print(f"保存配置文件时出错：{str(e)}")
+        # print(f"Lỗi khi lưu file cấu hình: {str(e)}")
+        # 如果保存出错，尝试使用 config_file_path 再次保存
+        config_path = json.loads(temp_json_data).get("save_config_path", "config.json")
+        CONFIG_FILE_NAME = config_path
+        config_file_path = os.path.join("/tmp", CONFIG_FILE_NAME)
+        try:
+            if os.path.exists(config_file_path):
+                os.remove(config_file_path)
+                print(f"已删除文件，并重新保存：\033[33m{config_file_path}\033[0m")
+                # print(f"File cấu hình đã được lưu vào: \033[33m{config_file_path}\033[0m")
+            else:
+                print(f"文件不存在，正在保存：\033[33m{config_file_path}\033[0m")
+                # print(f"File không tồn tại, đang lưu tại: \033[33m{config_file_path}\033[0m")
+            tool.saveFile(
+                config_file_path, json.dumps(nodes, indent=2, ensure_ascii=False)
+            )
+            # print(f"配置文件已保存到 {config_file_path}")
+            # print(f"Tập tin cấu hình đã được lưu vào {config_file_path}")
+        except Exception as e:
+            os.remove(config_file_path)
+            print(f"已删除文件：\033[33m{config_file_path}\033[0m")
+            # print(f"Các file đã bị xóa: \033[33m{config_file_path}\033[0m")
+            print(f"再次保存配置文件时出错：{str(e)}")
+            # print(f"Lỗi khi lưu lại file cấu hình: {str(e)}")
 
 
 def set_proxy_rule_dns(config):
@@ -690,47 +690,45 @@ def parse_json(value):
 
 # if __name__ == "__main__":
 #     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
-    
-# if __name__ == "__main__":
-#     init_parsers()
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("--temp_json_data", type=parse_json, help="临时内容")
-#     parser.add_argument("--template_index", type=int, help="模板序号")
-#     args = parser.parse_args()
-#     temp_json_data = args.temp_json_data
-#     if temp_json_data and temp_json_data != "{}":
-#         providers = json.loads(temp_json_data)
-#     # else:
-#     #     providers = tool.load_json('providers.json')  # 加载本地 providers.json
-#     if providers.get("config_template"):
-#         config_template_path = providers["config_template"]
-#         print("选择: \033[33m" + config_template_path + "\033[0m")
-#         # print ('Mẫu cấu hình sử dụng: \033[33m' + template_list[uip] + '.json\033[0m')
-#         response = requests.get(providers["config_template"])
-#         response.raise_for_status()
-#         config = response.json()
-#     # else:
-#     #     template_list = get_template()
-#     #     if len(template_list) < 1:
-#     #         print('没有找到模板文件')
-#     #         # print('Không tìm thấy file mẫu')
-#     #         sys.exit()
-#     #     display_template(template_list)
-#     #     uip = select_config_template(template_list, selected_template_index=args.template_index)
-#     #     config_template_path = 'config_template/' + template_list[uip] + '.json'
-#     #     print('选择: \033[33m' + template_list[uip] + '.json\033[0m')
-#     #     # print ('Mẫu cấu hình sử dụng: \033[33m' + template_list[uip] + '.json\033[0m')
-#     #     config = tool.load_json(config_template_path)
-#     nodes = process_subscribes(providers["subscribes"])
-#     if providers.get("Only-nodes"):
-#         combined_contents = []
-#         for sub_tag, contents in nodes.items():
-#             # 遍历每个机场的内容
-#             for content in contents:
-#                 # 将内容添加到新列表中
-#                 combined_contents.append(content)
-#         final_config = combined_contents  # 只返回节点信息
-#     else:
-#         final_config = combin_to_config(config, nodes)  # 节点信息添加到模板
-#     save_config(providers["save_config_path"], final_config)
-#     # updateLocalConfig('http://127.0.0.1:9090',providers['save_config_path'])
+
+if __name__ == "__main__":
+    init_parsers()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--temp_json_data", type=parse_json, help="临时内容")
+    parser.add_argument("--template_index", type=int, help="模板序号")
+    args = parser.parse_args()
+    temp_json_data = args.temp_json_data
+    if temp_json_data and temp_json_data != "{}":
+        providers = json.loads(temp_json_data)
+    # else:
+    #     providers = tool.load_json('providers.json')  # 加载本地 providers.json
+    if providers.get("config_template"):
+        config_template_path = providers["config_template"]
+        print("选择: \033[33m" + config_template_path + "\033[0m")
+        # print ('Mẫu cấu hình sử dụng: \033[33m' + template_list[uip] + '.json\033[0m')
+        config = tool.load_json(providers["config_template"])
+    # else:
+    #     template_list = get_template()
+    #     if len(template_list) < 1:
+    #         print('没有找到模板文件')
+    #         # print('Không tìm thấy file mẫu')
+    #         sys.exit()
+    #     display_template(template_list)
+    #     uip = select_config_template(template_list, selected_template_index=args.template_index)
+    #     config_template_path = 'config_template/' + template_list[uip] + '.json'
+    #     print('选择: \033[33m' + template_list[uip] + '.json\033[0m')
+    #     # print ('Mẫu cấu hình sử dụng: \033[33m' + template_list[uip] + '.json\033[0m')
+    #     config = tool.load_json(config_template_path)
+    nodes = process_subscribes(providers["subscribes"])
+    if providers.get("Only-nodes"):
+        combined_contents = []
+        for sub_tag, contents in nodes.items():
+            # 遍历每个机场的内容
+            for content in contents:
+                # 将内容添加到新列表中
+                combined_contents.append(content)
+        final_config = combined_contents  # 只返回节点信息
+    else:
+        final_config = combin_to_config(config, nodes)  # 节点信息添加到模板
+    save_config(providers["save_config_path"], final_config)
+    # updateLocalConfig('http://127.0.0.1:9090',providers['save_config_path'])

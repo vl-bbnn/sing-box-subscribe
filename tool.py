@@ -186,17 +186,17 @@ def readFile(path):
 def load_json(path):
     return json.loads(readFile(path))
 
-def load_remote_json(url):
-    data = requests.get(url)
-    return json.loads(data.content)
+# def load_remote_json(url):
+#     data = requests.get(url)
+#     return json.loads(data.content)
     
-def localUrlToGlobal(local, ref):
-    split_url = urlsplit(ref)
-    clean_path = "".join(split_url.path.rpartition("/")[:-1])
-    local_path = "".join(local.rpartition("/")[2:])
-    updated = split_url._replace(path=urljoin(clean_path, local_path))
-    result = urlunsplit(updated)
-    return result
+# def localUrlToGlobal(local, ref):
+#     split_url = urlsplit(ref)
+#     clean_path = "".join(split_url.path.rpartition("/")[:-1])
+#     local_path = "".join(local.rpartition("/")[2:])
+#     updated = split_url._replace(path=urljoin(clean_path, local_path))
+#     result = urlunsplit(updated)
+#     return result
 
 def noblankLine(data):
     lines = data.splitlines()
