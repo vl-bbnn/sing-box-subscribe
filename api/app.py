@@ -99,10 +99,10 @@ def config(id):
     if not device_data:
         return
 
-    if not device_data["urls"]:
-        return
+    if "urls" not in device_data:
+        device_data["urls"] = {}
 
-    if not device_data["template"]:
+    if "template" not in device_data:
         return
 
     try:
@@ -111,7 +111,7 @@ def config(id):
         tool.update_providers()
         config = tool.load_json("configs/" + device_data["template"])
 
-        if config["add_public_configs"]:
+        if device_data.get("add_public_configs", "false"):
             for label in ["WHITE_LISTS_MOBILE", "WHITE_LISTS_CABLE", "BLACK_VLESS_RUS"]:
                 link = os.environ.get(label, "")
                 if link:
