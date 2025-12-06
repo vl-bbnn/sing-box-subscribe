@@ -111,14 +111,15 @@ def config(id):
         tool.update_providers()
         config = tool.load_json("configs/" + device_data["template"])
 
-        for label in ["WHITE_LISTS_MOBILE", "WHITE_LISTS_CABLE", "BLACK_VLESS_RUS"]:
-            link = os.environ.get(label, "")
-            if link:
-                print(f"link: {link}")
+        if config["add_public_configs"]:
+            for label in ["WHITE_LISTS_MOBILE", "WHITE_LISTS_CABLE", "BLACK_VLESS_RUS"]:
+                link = os.environ.get(label, "")
                 if link:
-                    urls = fetch_urls(link)
-                    tool.save_config(f"urls/{label}.json", urls)
-                    device_data["urls"].update(urls)
+                    print(f"link: {link}")
+                    if link:
+                        urls = fetch_urls(link)
+                        tool.save_config(f"urls/{label}.json", urls)
+                        device_data["urls"].update(urls)
 
         nodes = tool.process_subscribes(device_data["urls"])
         final_config = tool.combin_to_config(config, nodes)
