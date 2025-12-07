@@ -111,7 +111,7 @@ def config(id):
         tool.update_providers()
         config = tool.load_json("configs/" + device_data["template"])
 
-        if device_data.get("add_public_configs", "false") == "true":
+        if str(device_data.get("add_public_configs", "False")) == "True":
             for label in ["WHITE_LISTS_MOBILE", "WHITE_LISTS_CABLE", "BLACK_VLESS_RUS"]:
                 link = os.environ.get(label, "")
                 if link:
