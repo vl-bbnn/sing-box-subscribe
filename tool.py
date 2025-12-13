@@ -45,52 +45,53 @@ def combin_to_config(config, data):
     global providers
     config_outbounds = config["outbounds"] if config.get("outbounds") else None
 
-    outbounds_with_all = []
+    outbounds = {}
 
     for out in config_outbounds:
         if out.get("outbounds"):
-            if "{all}" in out["outbounds"]:
-                outbounds_with_all.append(out["tag"])
+            for k in out["outbounds"]:
+                if not outbounds.get(k):
+                    outbounds[k] = []
+                outbounds[k].append(out["tag"])
 
     i = 0
 
     for group in data:
         if "subgroup" in group:
             i += 1
+            name = group.replace("-subgroup", "")
             for out in config_outbounds:
                 if out.get("outbounds"):
-                    if out["tag"] in outbounds_with_all:
-                        out["outbounds"] = (
-                            [out["outbounds"]]
-                            if isinstance(out["outbounds"], str)
-                            else out["outbounds"]
-                        )
-                        if "{all}" in out["outbounds"]:
-                            index_of_all = out["outbounds"].index("{all}")
-                            out["outbounds"][index_of_all] = (
-                                group.rsplit("-", 1)[0]
-                            ).rsplit("-", 1)[-1]
-                            i += 1
-                        else:
-                            out["outbounds"].insert(
-                                i, (group.rsplit("-", 1)[0]).rsplit("-", 1)[-1]
-                            )
-            new_outbound = {
-                "tag": (group.rsplit("-", 1)[0]).rsplit("-", 1)[-1],
-                "type": "selector",
-                "outbounds": ["{" + group + "}"],
-            }
-            config_outbounds.insert(-2, new_outbound)
-            if "subgroup" not in group:
-                for out in config_outbounds:
-                    if out.get("outbounds"):
-                        if out["tag"] == "Proxy":
+                    for k in outbounds:
+                        if name in k and out["tag"] in outbounds[k]:
                             out["outbounds"] = (
                                 [out["outbounds"]]
                                 if isinstance(out["outbounds"], str)
                                 else out["outbounds"]
                             )
-                            out["outbounds"].append("{" + group + "}")
+                            if k in out["outbounds"]:
+                                index_of_all = out["outbounds"].index(f"{k}")
+                                out["outbounds"][index_of_all] = name
+                                i += 1
+                            else:
+                                out["outbounds"].insert(i, name)
+            new_outbound = {
+                "tag": name,
+                "type": "selector",
+                "outbounds": ["{" + group + "}"],
+            }
+            config_outbounds.insert(-2, new_outbound)
+
+        if "subgroup" not in group:
+            for out in config_outbounds:
+                if out.get("outbounds"):
+                    if out["tag"] == "Proxy":
+                        out["outbounds"] = (
+                            [out["outbounds"]]
+                            if isinstance(out["outbounds"], str)
+                            else out["outbounds"]
+                        )
+                        out["outbounds"].append("{" + group + "}")
     temp_outbounds = []
     if config_outbounds:
         # 提前处理all模板
