@@ -112,7 +112,7 @@ def config(id):
         config = tool.load_json("configs/" + device_data["template"])
 
         if str(device_data.get("add_public_configs", "False")) == "True":
-            for label in ["WHITE_LISTS_MOBILE", "WHITE_LISTS_CABLE", "BLACK_VLESS_RUS"]:
+            for label in ["WHITE_LISTS_MOBILE"]:
                 link = os.environ.get(label, "")
                 if link:
                     print(f"link: {link}")
